@@ -54,11 +54,19 @@ class SusumuGTTS(Node):
 
             audio_segment = pydub.AudioSegment.from_file(audio_buffer, format="mp3")
             if self.playback_speed != 1.0:
-                audio_segment = audio_segment.speedup(playback_speed=self.playback_speed, chunk_size=50, crossfade=0)
+                audio_segment = audio_segment.speedup(
+                    playback_speed=self.playback_speed,
+                    chunk_size=50
+                )
+
             playback_data = audio_segment.raw_data
-            playback_obj = sa.play_buffer(playback_data, num_channels=audio_segment.channels,
-                                          bytes_per_sample=audio_segment.sample_width,
-                                          sample_rate=audio_segment.frame_rate)
+            playback_obj = sa.play_buffer(
+                playback_data,
+                num_channels=audio_segment.channels,
+                bytes_per_sample=audio_segment.sample_width,
+                sample_rate=audio_segment.frame_rate
+            )
+
             while playback_obj.is_playing():
                 if self.stop_playback:
                     playback_obj.stop()
