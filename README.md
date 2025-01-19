@@ -42,3 +42,10 @@ lsusb
 aplay /usr/share/sounds/alsa/Side_Right.wav
 ```
 これが再生されない場合、環境設定で音声デバイスが正しく設定されていない可能性があります。  
+
+### 「PY_SSIZE_T_CLEAN macro must be defined for '#' formats」というエラーが出る
+PyAudioのバージョンが0.2.11未満の場合発生します。
+バージョンが0.2.12以上になるようにアップデートしてください。
+```bash
+pip install pyaudio --upgrade
+```
