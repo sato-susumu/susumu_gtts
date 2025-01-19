@@ -14,7 +14,7 @@ class SusumuGTTS(Node):
     def __init__(self):
         super().__init__('susumu_gtts')
         self.declare_parameter('lang', 'ja')
-        self.declare_parameter('playback_speed', 1.5)
+        self.declare_parameter('playback_speed', 2)
         self.declare_parameter('output_device', None)  # デフォルトデバイスを使用
 
         self.language = self.get_parameter('lang').value
@@ -23,6 +23,7 @@ class SusumuGTTS(Node):
 
         self.pyaudio_instance = pyaudio.PyAudio()
 
+        self.list_host_apis()
         self.list_audio_devices()
 
         self.subscription = self.create_subscription(
@@ -40,6 +41,27 @@ class SusumuGTTS(Node):
         self.get_logger().info(f"Language: {self.language}, Playback Speed: {self.playback_speed}x")
         self.get_logger().info(
             f"Output Device: {self.output_device if self.output_device is not None else 'Default Device'}")
+
+    def list_host_apis(self):
+        p = self.pyaudio_instance
+        host_api_count = p.get_host_api_count()
+        logger = self.get_logger()
+        logger.info(f"利用可能なホストAPIの数: {host_api_count}\n")
+
+        for i in range(host_api_count):
+            host_api_info = p.get_host_api_info_by_index(i)
+            name = host_api_info.get('name')
+            version = host_api_info.get('version')
+            device_count = host_api_info.get('deviceCount')
+            logger.info(f"Host API {i}:")
+            logger.info(f"  名前: {name}")
+            logger.info(f"  バージョン: {version}")
+            logger.info(f"  デバイス数: {device_count}\n")
+
+        # システムのデフォルトホストAPI
+        default_host_api_index = p.get_default_host_api_info().get('index')
+        default_host_api_name = p.get_default_host_api_info().get('name')
+        logger.info(f"デフォルトホストAPI: {default_host_api_name} (Index: {default_host_api_index})")
 
     def list_audio_devices(self):
         """利用可能なオーディオデバイスの一覧をログに出力します。"""
